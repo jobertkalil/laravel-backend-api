@@ -16,7 +16,7 @@ class MessageResource extends JsonResource
     {
         return [
             'response_id' => $this->messageID,
-            'message' => $this->text
+            'response' => $this->text
         ];
     }
 }
