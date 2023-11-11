@@ -55,19 +55,15 @@ class MessageController extends Controller
         foreach($matrix->context as $rule) {
             $match = false;
             foreach($rule->keywords as $keyword) {
-                if(str_contains(strtolower($context), strtolower($keyword))) {
+                $pattern = "/\b" . preg_quote($keyword, '/') . "\b/i";
+
+                if (preg_match($pattern, $context)) {
                     $match = true;
                     break;
                 }
             }
 
-            if($match === true) {
-                if(strlen($response) > 0) {
-                    $response .= " " . $rule->response;
-                } else {
-                    $response = $rule->response;
-                }
-            }
+            $response = $this->assessResponse($match, $response, $rule);
         }
 
         if(strlen($response) <= 0) {
@@ -75,5 +71,16 @@ class MessageController extends Controller
         } else {
             return $response;
         }
+    }
+
+    private function assessResponse(bool $match, string $response, $rule): string {
+        if ($match === true) {
+            if (strlen($response) > 0) {
+                $response .= " " . $rule->response;
+            } else {
+                $response = $rule->response;
+            }
+        }
+        return $response;
     }
 }
